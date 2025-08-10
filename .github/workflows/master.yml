@@ -5,6 +5,7 @@ on:
       - master
 env:
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,3 +27,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           packageManager: bun
+        env:
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
