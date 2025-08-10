@@ -81,11 +81,17 @@ export const createTRPCRouter = t.router;
  *
  * Checks if user is logged in
  */
-const isLoggedIn = t.middleware(({ next, ctx }) => {
+const isLoggedIn = t.middleware(async ({ next, ctx }) => {
   if (!ctx.auth?.userId) {
     throw new TRPCError({ code: 'UNAUTHORIZED' })
   }
-  return next({ctx})
+  try {
+    const user = await ctx.clerk.users.getUser(ctx.auth.userId);
+    return next({ctx: {...ctx, user }})
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    throw new TRPCError({ code: 'UNAUTHORIZED', cause: err });
+  }
 });
 
 /**

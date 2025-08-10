@@ -15,14 +15,11 @@ export const postRouter = createTRPCRouter({
     .input(z.object({
         content: z.string().max(256).trim().min(1)
     }))
-    .mutation(async ({ctx, input}) => {
-        const { auth } = ctx;
-        const user = await ctx.clerk.users.getUser(auth!.userId!);
-        
+    .mutation(async ({ctx, input}) => {       
         const newPost = {
             content: input.content,
-            authorName: user.fullName!,
-            profilePicture: user.imageUrl
+            authorName: ctx.user.fullName!,
+            profilePicture: ctx.user.imageUrl
         };
         const posts = await ctx.db.insert(PostTable).values(newPost).returning();
         return posts[0];
