@@ -7,7 +7,7 @@ import { useState } from "react"
 import { api } from "@/trpc"
 
 export default function CreatePost() {
-    const [form, setForm] = useState<string | undefined>()
+    const [form, setForm] = useState<string>("")
     const { user } = useUser()
     const utils = api.useUtils();
     const userInitials = nameInitialsFromName(user?.fullName ?? "")
@@ -23,10 +23,10 @@ export default function CreatePost() {
     }
 
     function handleCreatePost() {
-        if (!form || form.trim() === "") {
+        if (form.trim() === "") {
             return;
         }
-        createPost.mutate({content: form!})
+        createPost.mutate({content: form})
         setForm(""); // Clear the input after posting
     }
 

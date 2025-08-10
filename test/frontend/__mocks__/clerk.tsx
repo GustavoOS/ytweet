@@ -1,26 +1,9 @@
+/* eslint-disable react-refresh/only-export-components */
 import React from 'react';
-import { mock } from 'bun:test'
+import { mock } from 'bun:test';
 
-// A simple mock for ClerkProvider that just renders its children
-export const ClerkProvider = ({ children }: { children: React.ReactNode }) => {
-  return <>{children}</>;
-};
-
-// A mock for the useUser hook
-// eslint-disable-next-line react-refresh/only-export-components
-export const useUser = mock((): {
-  isLoaded: boolean;
-  isSignedIn: boolean;
-  user: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    profileImageUrl: string;
-    emailAddresses: { emailAddress: string }[];
-    fullName?: string;
-    imageUrl?: string;
-  } | null;
-} => ({
+// Simple mock for the useUser hook
+export const useUser = mock(() => ({
   isLoaded: true,
   isSignedIn: true,
   user: {
@@ -33,3 +16,8 @@ export const useUser = mock((): {
     imageUrl: 'https://example.com/john-doe.jpg',
   },
 }));
+
+// Simple mock for ClerkProvider that just renders children
+export const ClerkProvider = ({ children }: { children: React.ReactNode }) => {
+  return <>{children}</>;
+};
