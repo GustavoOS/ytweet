@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,6 +18,8 @@ jobs:
         run: bun run build
       - name: Run Tests
         run: bun test --coverage
+      - name: Migrate Database
+        run: bun run db:migrate
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@v3
         with:
