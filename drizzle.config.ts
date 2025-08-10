@@ -8,5 +8,5 @@ export default {
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-  tablesFilter: ["propertis_*"],
+  tablesFilter: ["ytweet_*"],
 } satisfies Config;

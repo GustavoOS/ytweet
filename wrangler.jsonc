@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "propertis",
+	"name": "ytweet",
 	"main": "worker/index.ts",
 	"compatibility_date": "2025-07-26",
 	"compatibility_flags": [
@@ -23,7 +23,7 @@
 			"binding": "HYPERDRIVE",
 			"id": "d898c6bc8c874f74adf621164131aa3f",
 			// Optional. Can be used to connect to a local database for local development with `wrangler dev`
-			"localConnectionString": "postgresql://postgres:oF8yWaAkjBcEUAy1@localhost:5432/propertis"
+			"localConnectionString": "postgresql://postgres:oF8yWaAkjBcEUAy1@localhost:5432/ytweet"
 		}
 	]
 	/**

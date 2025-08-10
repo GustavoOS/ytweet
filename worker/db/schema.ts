@@ -10,7 +10,7 @@ import { pgTableCreator, uuid } from "drizzle-orm/pg-core";
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = pgTableCreator((name) => `propertis_${name}`);
+export const createTable = pgTableCreator((name) => `ytweet_${name}`);
 
 export const PostTable = createTable(
   "post",

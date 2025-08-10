@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "propertis",
+      "name": "ytweet",
       "dependencies": {
         "@clerk/backend": "^2.6.2",
         "@clerk/clerk-react": "^5.38.1",

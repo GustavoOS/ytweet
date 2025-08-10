@@ -12,22 +12,8 @@
     {
       "idx": 1,
       "version": "7",
-      "when": 1754750667864,
-      "tag": "0001_smiling_silver_samurai",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1754777730974,
-      "tag": "0002_salty_frog_thor",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1754793230562,
-      "tag": "0003_condemned_venom",
+      "when": 1754858714388,
+      "tag": "0001_daily_absorbing_man",
       "breakpoints": true
     }
   ]
