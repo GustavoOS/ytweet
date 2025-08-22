@@ -1,7 +1,8 @@
 import { PostTable } from "@worker/db/schema";
-import { createTRPCRouter, privateProcedure, publicProcedure } from "..";
-import z from "zod";
+import { createTRPCRouter } from "@worker/trpc";
+import { privateProcedure, publicProcedure } from "@worker/trpc/procedures";
 import { desc } from 'drizzle-orm';
+import z from "zod";
 
 export const postRouter = createTRPCRouter({
     all: publicProcedure

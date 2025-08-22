@@ -1,8 +1,7 @@
 /// <reference types="../../worker-configuration.d.ts" />
 
 import { getDb } from "@worker/db";
-import { createClerkClient } from "@clerk/backend";
-import { TRPCError } from "@trpc/server";
+import { Redis } from '@upstash/redis';
 
 export async function createContext({
   req,
@@ -13,26 +12,18 @@ export async function createContext({
   env: Env;
   workerCtx: ExecutionContext;
 }) {
-  try {
-    const clerk = createClerkClient({ secretKey: env.CLERK_SECRET_KEY, publishableKey: env.CLERK_PUBLISHABLE_KEY });
-    const requestState = await clerk.authenticateRequest(req)
-    const auth = requestState.toAuth()
-    return {
-      req,
-      env,
-      workerCtx,
-      db: getDb(env),
-      auth,
-      clerk
-    };
+  const redis = new Redis({
+    url: env.REDIS_URL,
+    token: env.REDIS_TOKEN,
+  });
 
-
-  } catch (error) {
-    console.error(error)
-    throw new TRPCError({ message: "Unable to get auth", cause: error, code: "BAD_GATEWAY" })
-  }
-
-
+  return {
+    req,
+    env,
+    workerCtx,
+    db: getDb(env),
+    redis
+  };
 }
 
 export type Context = Awaited<ReturnType<typeof createContext>>;
