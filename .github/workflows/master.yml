@@ -5,6 +5,7 @@ on:
       - master
 env:
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
