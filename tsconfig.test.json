@@ -17,7 +17,7 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./frontend/*"],
       "@worker/*": ["./worker/*"]
     },
     "types": ["bun-types", "@types/node"],

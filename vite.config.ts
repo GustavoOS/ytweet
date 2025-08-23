@@ -15,11 +15,13 @@ export default defineConfig({
   tanstackRouter({
     target: 'react',
     autoCodeSplitting: true,
+    routesDirectory: './frontend/routes',
+    generatedRouteTree: './frontend/routeTree.gen.ts',
   }),
   cloudflare()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(__dirname, "./frontend"),
       "@worker": path.resolve(__dirname, "./worker"),
     },
   },

@@ -2,6 +2,7 @@
 
 import { getDb } from "@worker/db";
 import { Redis } from '@upstash/redis';
+import { UnitOfWork } from "@worker/uow";
 
 export async function createContext({
   req,
@@ -17,11 +18,14 @@ export async function createContext({
     token: env.REDIS_TOKEN,
   });
 
+  const db = getDb(env);
+
   return {
     req,
     env,
     workerCtx,
-    db: getDb(env),
+    db,
+    uow: new UnitOfWork(db),
     redis
   };
 }

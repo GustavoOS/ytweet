@@ -24,9 +24,9 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./frontend/*"],
       "@worker/*": ["./worker/*"]
     }
   },
-  "include": ["src"]
+  "include": ["frontend"]
 }
