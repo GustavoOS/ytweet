@@ -21,6 +21,8 @@ export const rateLimit = t.middleware(async ({ next, ctx }) => {
     throw new TRPCError({ code: "BAD_REQUEST", message: "IP address not found" });
   }
 
+  console.info("⏲️  Using Rate Limiter")
+
   const { success } = await limiter.limit(ip);
   if (!success) {
     throw new TRPCError({
