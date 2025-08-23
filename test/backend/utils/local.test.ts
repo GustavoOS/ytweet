@@ -1,7 +1,6 @@
+
 import { isLocal } from "@worker/trpc/util/local";
-import { expect } from "bun:test";
-import { test } from "bun:test";
-import { describe } from "bun:test";
+import { describe, expect, test } from "bun:test";
 
 describe("Check local recognition", () => {
     test("Test local database URL", () => {
