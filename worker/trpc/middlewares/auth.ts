@@ -1,7 +1,6 @@
-import { createClerkClient, type User } from "@clerk/backend";
+import { createClerkClient } from "@clerk/backend";
 import type { Context } from "../context";
 
-export type AuthenticatedContext = Context & { user: User };
 
 export async function authFunction(ctx: Context) {
   const clerk = createClerkClient({ secretKey: ctx.env.CLERK_SECRET_KEY, publishableKey: ctx.env.CLERK_PUBLISHABLE_KEY });
