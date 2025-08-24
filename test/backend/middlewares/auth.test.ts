@@ -44,10 +44,9 @@ describe("authFunction", () => {
   it("GIVEN an authenticated user WHEN getUser is called THEN user is returned", async () => {
     // Given
     const mockUser = { id: "user_123", firstName: "John" } as unknown as User;
-    const mockAuth = { isAuthenticated: true, userId: "user_123" };
     
     mockAuthenticateRequest.mockResolvedValue({ toAuth: mockToAuth });
-    mockToAuth.mockReturnValue(mockAuth);
+    mockToAuth.mockReturnValue({ isAuthenticated: true, userId: "user_123" });
     mockGetUser.mockResolvedValue(mockUser);
 
     // When
@@ -64,17 +63,8 @@ describe("authFunction", () => {
 
   it("GIVEN an unauthenticated user WHEN getUser is called THEN Error is thrown", async () => {
     // Given
-    const mockAuth = {
-      isAuthenticated: false,
-      userId: null,
-    };
-
-    const mockRequestState = {
-      toAuth: mockToAuth,
-    };
-
-    mockAuthenticateRequest.mockResolvedValue(mockRequestState);
-    mockToAuth.mockReturnValue(mockAuth);
+    mockAuthenticateRequest.mockResolvedValue({ toAuth: mockToAuth });
+    mockToAuth.mockReturnValue({ isAuthenticated: false, userId: null });
 
     // When & Then
     expect(authFunction(mockContext)).rejects.toThrow("User is not authenticated");
@@ -83,8 +73,7 @@ describe("authFunction", () => {
 
   it("GIVEN clerk backend error WHEN getUser is called THEN error is thrown", async () => {
     // Given
-    const clerkError = new Error("Clerk API error");
-    mockAuthenticateRequest.mockRejectedValue(clerkError);
+    mockAuthenticateRequest.mockRejectedValue(new Error("Clerk API error"));
 
     // When & Then
     expect(authFunction(mockContext)).rejects.toThrow("Clerk API error");

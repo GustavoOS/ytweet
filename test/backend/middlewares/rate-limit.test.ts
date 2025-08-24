@@ -61,7 +61,7 @@ describe("rateLimitFunction", () => {
     mockLimit.mockResolvedValue({ success: true });
 
     // When & Then
-    await expect(rateLimitFunction(mockContext)).resolves.toBeUndefined();
+    expect(rateLimitFunction(mockContext)).resolves.toBeUndefined();
     expect(mockLimit).toHaveBeenCalledWith("192.168.1.1");
   });
 
@@ -85,7 +85,7 @@ describe("rateLimitFunction", () => {
     mockContext.env.DATABASE_URL = "postgres://user:pass@localhost:5432/db";
 
     // When & Then
-    await expect(rateLimitFunction(mockContext)).resolves.toBeUndefined();
+    expect(rateLimitFunction(mockContext)).resolves.toBeUndefined();
     expect(mockLimit).not.toHaveBeenCalled(); // limit() should not be called in local mode
   });
 
