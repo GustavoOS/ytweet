@@ -1,6 +1,6 @@
 import type { User } from "@clerk/backend";
 import type { Context } from "@worker/trpc/context";
-import { getUser } from "@worker/trpc/middlewares/auth";
+import { authFunction } from "@worker/trpc/middlewares/auth";
 import { beforeEach, describe, expect, it, mock } from "bun:test";
 
 // Mock the Clerk module
@@ -13,7 +13,7 @@ mock.module("@clerk/backend", () => ({
   createClerkClient: mockCreateClerkClient,
 }));
 
-describe("getUser", () => {
+describe("authFunction", () => {
   let mockContext: Context;
 
   beforeEach(() => {
@@ -51,7 +51,7 @@ describe("getUser", () => {
     mockGetUser.mockResolvedValue(mockUser);
 
     // When
-    const result = await getUser(mockContext);
+    const result = await authFunction(mockContext);
 
     // Then
     expect(result).toBe(mockUser);
@@ -77,7 +77,7 @@ describe("getUser", () => {
     mockToAuth.mockReturnValue(mockAuth);
 
     // When & Then
-    expect(getUser(mockContext)).rejects.toThrow("User is not authenticated");
+    expect(authFunction(mockContext)).rejects.toThrow("User is not authenticated");
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
@@ -87,7 +87,7 @@ describe("getUser", () => {
     mockAuthenticateRequest.mockRejectedValue(clerkError);
 
     // When & Then
-    expect(getUser(mockContext)).rejects.toThrow("Clerk API error");
+    expect(authFunction(mockContext)).rejects.toThrow("Clerk API error");
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 });
