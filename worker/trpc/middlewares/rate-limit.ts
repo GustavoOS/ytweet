@@ -4,7 +4,7 @@ import { t } from "@worker/trpc";
 import type { Context } from "@worker/trpc/context";
 import { isLocal } from "@worker/trpc/util/local";
 
-export async function rateLimitMiddlewareFunction<T>({ next, ctx }: { ctx: Context, next: (opts: { ctx: Context }) => Promise<T> }) {
+export async function rateLimitFunction(ctx: Context) {
   const limiter = new Ratelimit({
     redis: ctx.redis,
     limiter: Ratelimit.slidingWindow(10, "10 s"),
@@ -17,7 +17,7 @@ export async function rateLimitMiddlewareFunction<T>({ next, ctx }: { ctx: Conte
   if (!ip) {
     if (isLocal(ctx.env.DATABASE_URL)) {
       console.warn("⚠️  Running in local mode, skipping rate limit");
-      return next({ ctx });
+      return;
     }
     throw new TRPCError({ code: "BAD_REQUEST", message: "IP address not found" });
   }
@@ -31,8 +31,9 @@ export async function rateLimitMiddlewareFunction<T>({ next, ctx }: { ctx: Conte
       message: "Rate limit exceeded",
     });
   }
-
-  return next({ ctx })
 }
 
-export const rateLimit = t.middleware(rateLimitMiddlewareFunction);
+export const rateLimit = t.middleware(async ({ next, ctx }) => {
+  await rateLimitFunction(ctx)
+  return next({ ctx });
+});

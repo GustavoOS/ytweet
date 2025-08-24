@@ -1,6 +1,6 @@
 import { describe, test, expect, mock, beforeEach } from "bun:test";
 import { TRPCError } from "@trpc/server";
-import { rateLimitMiddlewareFunction } from "@worker/trpc/middlewares/rate-limit";
+import { rateLimitFunction } from "@worker/trpc/middlewares/rate-limit";
 import type { Context } from "@worker/trpc/context";
 
 // Mock the Ratelimit class
@@ -27,15 +27,13 @@ mock.module("@upstash/ratelimit", () => ({
   Ratelimit: MockRatelimitConstructor,
 }));
 
-describe("rateLimitMiddlewareFunction", () => {
+describe("rateLimitFunction", () => {
   let mockContext: Context;
-  let mockNext: ReturnType<typeof mock>;
 
   beforeEach(() => {
     // Reset all mocks
     mockLimit.mockReset();
     MockRatelimitConstructor.mockReset();
-    mockNext = mock();
 
     // Setup mock context
     mockContext = {
@@ -57,23 +55,14 @@ describe("rateLimitMiddlewareFunction", () => {
     });
   });
 
-  test("GIVEN a request with valid IP WHEN rate limiter returns success THEN next should be called", async () => {
+  test("GIVEN a request with valid IP WHEN rate limiter returns success THEN should not throw error", async () => {
     // Given
     mockContext.req.headers.set("CF-Connecting-IP", "192.168.1.1");
     mockLimit.mockResolvedValue({ success: true });
-    const expectedResult = { data: "test" };
-    mockNext.mockResolvedValue(expectedResult);
 
-    // When
-    const result = await rateLimitMiddlewareFunction({
-      ctx: mockContext,
-      next: mockNext,
-    });
-
-    // Then
+    // When & Then
+    await expect(rateLimitFunction(mockContext)).resolves.toBeUndefined();
     expect(mockLimit).toHaveBeenCalledWith("192.168.1.1");
-    expect(mockNext).toHaveBeenCalledWith({ ctx: mockContext });
-    expect(result).toBe(expectedResult);
   });
 
   test("GIVEN a request with valid IP WHEN rate limiter returns failure THEN should throw TOO_MANY_REQUESTS error", async () => {
@@ -82,36 +71,21 @@ describe("rateLimitMiddlewareFunction", () => {
     mockLimit.mockResolvedValue({ success: false });
 
     // When & Then
-    expect(
-      rateLimitMiddlewareFunction({
-        ctx: mockContext,
-        next: mockNext,
-      })
-    ).rejects.toThrow(
+    expect(rateLimitFunction(mockContext)).rejects.toThrow(
       new TRPCError({
         code: "TOO_MANY_REQUESTS",
         message: "Rate limit exceeded",
       })
     );
     expect(mockLimit).toHaveBeenCalledWith("192.168.1.1");
-    expect(mockNext).not.toHaveBeenCalled();
   });
 
-  test("GIVEN a request without IP WHEN DATABASE_URL host is localhost THEN next should be called", async () => {
+  test("GIVEN a request without IP WHEN DATABASE_URL host is localhost THEN should not throw error", async () => {
     // Given
     mockContext.env.DATABASE_URL = "postgres://user:pass@localhost:5432/db";
-    const expectedResult = { data: "test" };
-    mockNext.mockResolvedValue(expectedResult);
 
-    // When
-    const result = await rateLimitMiddlewareFunction({
-      ctx: mockContext,
-      next: mockNext,
-    });
-
-    // Then
-    expect(mockNext).toHaveBeenCalledWith({ ctx: mockContext });
-    expect(result).toBe(expectedResult);
+    // When & Then
+    await expect(rateLimitFunction(mockContext)).resolves.toBeUndefined();
     expect(mockLimit).not.toHaveBeenCalled(); // limit() should not be called in local mode
   });
 
@@ -120,19 +94,13 @@ describe("rateLimitMiddlewareFunction", () => {
     mockContext.env.DATABASE_URL = "postgres://user:pass@remote-host.com:5432/db";
 
     // When & Then
-    expect(
-      rateLimitMiddlewareFunction({
-        ctx: mockContext,
-        next: mockNext,
-      })
-    ).rejects.toThrow(
+    expect(rateLimitFunction(mockContext)).rejects.toThrow(
       new TRPCError({
         code: "BAD_REQUEST",
         message: "IP address not found",
       })
     );
 
-    expect(mockNext).not.toHaveBeenCalled();
     expect(mockLimit).not.toHaveBeenCalled(); // limit() should not be called since IP is missing
   });
 });

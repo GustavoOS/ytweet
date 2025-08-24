@@ -1,7 +1,6 @@
 import type { User } from "@clerk/backend";
-import { TRPCError } from "@trpc/server";
 import type { Context } from "@worker/trpc/context";
-import { authenticateUserMiddlewareFunction } from "@worker/trpc/middlewares/auth";
+import { getUser } from "@worker/trpc/middlewares/auth";
 import { beforeEach, describe, expect, it, mock } from "bun:test";
 
 // Mock the Clerk module
@@ -14,9 +13,8 @@ mock.module("@clerk/backend", () => ({
   createClerkClient: mockCreateClerkClient,
 }));
 
-describe("authenticateUserMiddlewareFunction", () => {
+describe("getUser", () => {
   let mockContext: Context;
-  let mockNext: ReturnType<typeof mock>;
 
   beforeEach(() => {
     // Reset all mocks
@@ -34,9 +32,6 @@ describe("authenticateUserMiddlewareFunction", () => {
       req: new Request("http://localhost"),
     } as Context;
 
-    // Setup mock next function
-    mockNext = mock().mockResolvedValue("next-result");
-
     // Setup default Clerk client mock
     mockCreateClerkClient.mockReturnValue({
       authenticateRequest: mockAuthenticateRequest,
@@ -46,7 +41,7 @@ describe("authenticateUserMiddlewareFunction", () => {
     });
   });
 
-  it("GIVEN an authenticated user WHEN middleware runs THEN next is called with user attached to context", async () => {
+  it("GIVEN an authenticated user WHEN getUser is called THEN user is returned", async () => {
     // Given
     const mockUser = { id: "user_123", firstName: "John" } as unknown as User;
     const mockAuth = { isAuthenticated: true, userId: "user_123" };
@@ -56,19 +51,18 @@ describe("authenticateUserMiddlewareFunction", () => {
     mockGetUser.mockResolvedValue(mockUser);
 
     // When
-    const result = await authenticateUserMiddlewareFunction({
-      ctx: mockContext,
-      next: mockNext,
-    });
+    const result = await getUser(mockContext);
 
     // Then
-    expect(result).toBe("next-result");
-    expect(mockNext).toHaveBeenCalledWith({
-      ctx: { ...mockContext, user: mockUser },
+    expect(result).toBe(mockUser);
+    expect(mockCreateClerkClient).toHaveBeenCalledWith({
+      secretKey: "test-secret-key",
+      publishableKey: "test-publishable-key",
     });
+    expect(mockGetUser).toHaveBeenCalledWith("user_123");
   });
 
-  it("GIVEN an unauthenticated user WHEN middleware runs THEN TRPCError is thrown", async () => {
+  it("GIVEN an unauthenticated user WHEN getUser is called THEN Error is thrown", async () => {
     // Given
     const mockAuth = {
       isAuthenticated: false,
@@ -83,31 +77,17 @@ describe("authenticateUserMiddlewareFunction", () => {
     mockToAuth.mockReturnValue(mockAuth);
 
     // When & Then
-    expect(
-      authenticateUserMiddlewareFunction({
-        ctx: mockContext,
-        next: mockNext,
-      })
-    ).rejects.toThrow(TRPCError);
-
-    expect(mockNext).not.toHaveBeenCalled();
+    expect(getUser(mockContext)).rejects.toThrow("User is not authenticated");
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
-  it("GIVEN clerk backend error WHEN middleware runs THEN TRPCError is thrown", async () => {
+  it("GIVEN clerk backend error WHEN getUser is called THEN error is thrown", async () => {
     // Given
     const clerkError = new Error("Clerk API error");
     mockAuthenticateRequest.mockRejectedValue(clerkError);
 
     // When & Then
-    expect(
-      authenticateUserMiddlewareFunction({
-        ctx: mockContext,
-        next: mockNext,
-      })
-    ).rejects.toThrow(TRPCError);
-
-    expect(mockNext).not.toHaveBeenCalled();
+    expect(getUser(mockContext)).rejects.toThrow("Clerk API error");
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 });
