@@ -1,6 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit";
-import { t } from "@worker/trpc";
 import type { Context } from "@worker/trpc/context";
 import { isLocal } from "@worker/trpc/util/local";
 
@@ -32,8 +31,3 @@ export async function rateLimitFunction(ctx: Context) {
     });
   }
 }
-
-export const rateLimit = t.middleware(async ({ next, ctx }) => {
-  await rateLimitFunction(ctx)
-  return next({ ctx });
-});
