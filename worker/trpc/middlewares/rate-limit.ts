@@ -1,9 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { t } from "@worker/trpc";
+import type { Context } from "@worker/trpc/context";
 import { isLocal } from "@worker/trpc/util/local";
 
-export const rateLimit = t.middleware(async ({ next, ctx }) => {
+export async function rateLimitMiddlewareFunction<T>({ next, ctx }: { ctx: Context, next: (opts: { ctx: Context }) => Promise<T> }) {
   const limiter = new Ratelimit({
     redis: ctx.redis,
     limiter: Ratelimit.slidingWindow(10, "10 s"),
@@ -32,4 +33,6 @@ export const rateLimit = t.middleware(async ({ next, ctx }) => {
   }
 
   return next({ ctx })
-})
+}
+
+export const rateLimit = t.middleware(rateLimitMiddlewareFunction);
