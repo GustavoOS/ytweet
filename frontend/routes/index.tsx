@@ -6,6 +6,10 @@ import { SignedIn, SignedOut, SignInButton, SignOutButton } from '@clerk/clerk-r
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
+  loader: async({ context: { trpc, queryClient } }) => {
+    await queryClient.ensureQueryData(trpc.posts.all.queryOptions())
+    return
+  },
   component: IndexPage
 })
 
