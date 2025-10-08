@@ -1,5 +1,5 @@
 CREATE TABLE "ytweet_post" (
-	"id" uuid PRIMARY KEY DEFAULT uuid_generate_v7() NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"content" varchar(256) NOT NULL,
 	"createdAt" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	"profilePicture" varchar(256),

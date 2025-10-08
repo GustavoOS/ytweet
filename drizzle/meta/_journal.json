@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1754750249390,
-      "tag": "0000_uuidv7",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1754858714388,
-      "tag": "0001_daily_absorbing_man",
+      "when": 1759936332184,
+      "tag": "0000_supreme_earthquake",
       "breakpoints": true
     }
   ]

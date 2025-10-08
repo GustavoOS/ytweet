@@ -15,7 +15,7 @@ export const createTable = pgTableCreator((name) => `ytweet_${name}`);
 export const PostTable = createTable(
   "post",
   (d) => ({
-    id: uuid().primaryKey().default(sql`uuid_generate_v7()`),
+    id: uuid().primaryKey().default(sql`uuidv7()`),
     content: d.varchar({ length: 256 }).notNull(), 
     createdAt: d
       .timestamp({ withTimezone: true })
